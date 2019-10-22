@@ -1,8 +1,8 @@
-## Python3 - 30天从新手到大师
+## Python3爬虫 - 30天从新手到大师
 
 >作者：聂伟明
 >
->受jackfrued(骆昊)启发，为python爬虫开发做一点事情，同时也是总结自己的学习所得。
+>受jackfrued(骆昊)启发，为python爬虫开发做一点事情，同时也是总结自己的学习所得。任何不足之处欢迎issues;
 
 ### Day1~2 - Python3爬虫环境搭建  
 #### Day1 - windows, python3.5+, pycharm;  
