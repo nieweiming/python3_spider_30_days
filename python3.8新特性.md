@@ -76,5 +76,70 @@ def quantiles(dist, /, *, n=4, method='exclusive')
 
 f-string, 空表达式不被允许，`lambda` 和赋值表达式 `:=` 必须显式地加上圆括号。
 
-如果指定了转换符，表达式的求值结果会先转换再格式化。
+f-string中，单个左花括号 `'{'` 标示一个替换字段，以一个 Python 表达式打头，表达式之后可能有一个以叹号 `'!'` 标示的**转换字段**。之后还可能带有一个以冒号 `':'` 标示的**格式说明符**。
 
+ 每个表达式会在格式化字符串字面值所包含的位置按照从左至右的顺序被求值。
+
+转换符 `'!s'` 即对结果调用 `str()`，`'!r'` 为调用 `repr()`，而 `'!a'` 为调用 `ascii()`。
+
+>str() 函数将对象转化为适于人阅读的形式。
+>
+>repr() 函数将对象转化为供解释器读取的形式。
+>
+>ascii() 函数类似 repr() 函数, 返回一个表示对象的字符串, 但是对于字符串中的非 ASCII 字符则返回通过 repr() 函数使用 \x, \u 或 \U 编码的字符。
+
+格式说明符详情见：<https://docs.python.org/zh-cn/3.8/library/string.html#formatspec>
+
+**双重花括号 `'{{'` 或 `'}}'` 会被替换为相应的单个花括号。**
+
+```python
+>>> user = 'eric_idle'
+>>> member_since = date(1975, 7, 31)
+>>> delta = date.today() - member_since
+>>> f'{user=!s}  {delta.days=:,d}'
+'user=eric_idle  delta.days=16,075'
+```
+
+```python
+>>> print(f'{theta=}  {cos(radians(theta))=:.3f}')
+theta=30  cos(radians(theta))=0.866
+```
+
+#### 4、其他语言特性修改
+
+- 在之前版本中 `continue`语句不允许在 `finally` 子句中使用，这是因为具体实现存在一个问题。 在 Python 3.8 中此限制已被取消。
+- 添加 \N{name} 转义符在 正则表达式 中的支持:
+```python
+>>> notice = 'Copyright © 2019'
+>>> copyright_year_pattern = re.compile(r'\N{copyright sign}\s*(\d{4})')
+>>> int(copyright_year_pattern.search(notice).group(1))
+2019
+```
+>其中“\N{copyright sign}” 即表示版权符号“©”
+
+- 字典推导式已与字典字面值实现同步，会先计算键再计算值:
+
+对执行顺序的保证对赋值表达式来说很有用，因为在键表达式中赋值的变量将可在值表达式中被使用:
+
+```python
+>>> names = ['Martin von Löwis', 'Łukasz Langa', 'Walter Dörwald']
+>>> {(n := normalize('NFC', name)).casefold() : n for name in names}
+{'martin von löwis': 'Martin von Löwis',
+ 'łukasz langa': 'Łukasz Langa',
+ 'walter dörwald': 'Walter Dörwald'}
+```
+
+- ### math
+
+添加了新的函数 `math.dist()`用于计算两点之间的欧几里得距离;
+添加了新的函数 `math.prod()` 作为的 `sum()` 同类，该函数返回 'start' 值 (默认值: 1) 乘以一个数字可迭代对象的积;
+>sum()为求和函数， math.prod()为求积函数
+
+```python
+>>> prior = 0.8
+>>> likelihoods = [0.6, 3, 0.5]
+>>> math.prod(likelihoods, start=prior)
+0.72
+```
+
+*更多python3.8特性与改动请移步官方文档：<https://docs.python.org/zh-cn/3.8/whatsnew/3.8.html#assignment-expressions>*
